@@ -5,4 +5,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/employees/1', [HomeController::class, 'getEmployees']);
+Route::get('projects/', [HomeController::class, 'getData'])->name('projects.filter');

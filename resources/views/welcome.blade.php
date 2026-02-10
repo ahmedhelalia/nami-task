@@ -55,7 +55,7 @@
                                         <th>hour cost</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="employeesTableBody">
                                     <tr>
                                         <td>1</td>
                                         <td>Alice Johnson</td>
@@ -89,34 +89,7 @@
                                         <th>total project cost </th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Website Redesign</td>
-                                        <td>2025-10-05</td>
-                                        <td>2025-11-05</td>
-                                        <td>10</td>
-                                        <td>3</td>
-                                        <td>5500</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Mobile App</td>
-                                        <td>2025-10-05</td>
-                                        <td>2025-11-05</td>
-                                        <td>10</td>
-                                        <td>3</td>
-                                        <td>5500</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>API Stabilization</td>
-                                        <td>2025-10-05</td>
-                                        <td>2025-11-05</td>
-                                        <td>10</td>
-                                        <td>3</td>
-                                        <td>5500</td>
-                                    </tr>
+                                <tbody id="projectsTableBody">
                                 </tbody>
                             </table>
                         </div>
@@ -142,22 +115,7 @@
                                         <th>medul</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>2025-10-01</td>
-                                        <td>Alice</td>
-                                        <td>Website Redesign</td>
-                                        <td>6.5</td>
-                                        <td>test</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2025-10-02</td>
-                                        <td>Bob</td>
-                                        <td>API Stabilization</td>
-                                        <td>7.0</td>
-                                        <td>Design</td>
-                                    </tr>
-
+                                <tbody id="timeLogsTableBody">
                                 </tbody>
                             </table>
                         </div>
@@ -182,27 +140,7 @@
                                         <th>Hours</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>2025-10-01</td>
-                                        <td>Alice</td>
-                                        <td>Website Redesign</td>
-                                        <td>6.5</td>
-                                        <td>test</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2025-10-02</td>
-                                        <td>Bob</td>
-                                        <td>API Stabilization</td>
-                                        <td>7.0</td>
-                                        <td>Design</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2025-10-02</td>
-                                        <td>Carol</td>
-                                        <td>Mobile App</td>
-                                        <td>Testing</td>
-                                    </tr>
+                                <tbody id="modulsTableBody">
                                 </tbody>
                             </table>
                         </div>
@@ -276,8 +214,90 @@
 
     <!-- Bootstrap JS (requires Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+    <script>
+        $('#applyBtn').click(function() {
+            const projectId = $('#tableSelect').val();
+
+            axios.get('{{ route('projects.filter') }}', {
+                params: {
+                    project_id: projectId
+                }
+            }).then(function(response) {
+                /** employees */
+                let employeesHtml = '';
+                response.data.employees.forEach(emp => {
+                    employeesHtml += `
+                <tr>
+                    <td>${emp.id}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.salary}</td>
+                    <td>${emp.hour_cost}</td>
+                </tr>
+                    `
+                });
+
+                $('#employeesTableBody').html(employeesHtml);
+
+                /** projects */
+                let projectsHtml = '';
+                response.data.projects.forEach(project => {
+                    projectsHtml += `
+                <tr>
+                    <td>${project.id}</td>
+                    <td>${project.name}</td>
+                    <td>${project.start_date}</td>
+                    <td>${project.end_date}</td>
+                    <td>${project.total_days}</td>
+                    <td>${project.total_employees}</td>
+                    <td>${project.total_cost}</td>
+                </tr>
+                    `
+                });
+
+                $('#projectsTableBody').html(projectsHtml);
+
+                /** time logs */
+                let timeLogsHtml = '';
+                response.data.timeLogs.forEach(log => {
+                    timeLogsHtml += `
+                <tr>
+                    <td>${log.date}</td>
+                    <td>${log.employee}</td>
+                    <td>${log.project}</td>
+                    <td>${log.hours}</td>
+                    <td>${log.modul}</td>
+                </tr>
+                    `
+                });
+
+                $('#timeLogsTableBody').html(timeLogsHtml);
+
+                /** moduls */
+                let modulsHtml = '';
+                response.data.moduls.forEach(modul => {
+                    modulsHtml += `
+                <tr>
+                    <td>${modul.emp_name}</td>
+                    <td>${modul.name}</td>
+                    <td>${modul.project_name}</td>
+                    <td>${modul.hours}</td>
+                </tr>
+                    `
+                });
+
+                $('#modulsTableBody').html(modulsHtml);
+
+            }).catch(function(error) {
+                console.log(error)
+            });
+
+        })
+    </script>
 </body>
 
 </html>
